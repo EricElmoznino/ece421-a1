@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def loadData():
@@ -24,7 +23,9 @@ def loadData():
 
 
 def MSE(W, b, x, y, reg):
-    pass
+    loss_d = 0.5 * (((W * x).sum(axis=1) + b - y) ** 2).mean()
+    loss_w = 0.5 * reg * (W ** 2).sum()
+    return loss_d + loss_w
 
 
 def gradMSE(W, b, x, y, reg):
