@@ -23,7 +23,8 @@ def loadData():
 
 
 def MSE(W, b, x, y, reg):
-    loss_d = 0.5 * (((W * x).sum(axis=1) + b - y) ** 2).mean()
+    y_hat = (W * x).sum(axis=1) + b
+    loss_d = 0.5 * ((y_hat - y) ** 2).mean()
     loss_w = 0.5 * reg * (W ** 2).sum()
     return loss_d + loss_w
 
@@ -33,7 +34,11 @@ def gradMSE(W, b, x, y, reg):
 
 
 def crossEntropyLoss(W, b, x, y, reg):
-    pass
+    y_hat = (W * x).sum(axis=1) + b
+    y_hat = 1 / (1 + np.e ** -y_hat)
+    loss_d = -(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat)).mean()
+    loss_w = 0.5 * reg * (W ** 2).sum()
+    return loss_d + loss_w
 
 
 def gradCE(W, b, x, y, reg):
