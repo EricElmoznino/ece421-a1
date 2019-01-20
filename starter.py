@@ -30,7 +30,11 @@ def MSE(W, b, x, y, reg):
 
 
 def gradMSE(W, b, x, y, reg):
-    pass
+    y_hat = (W * x).sum(axis=1) + b
+    error = y_hat - y
+    W_grad = -(x * error + reg)
+    b_grad = -(error)
+    return W_grad, b_grad
 
 
 def crossEntropyLoss(W, b, x, y, reg):
@@ -42,8 +46,11 @@ def crossEntropyLoss(W, b, x, y, reg):
 
 
 def gradCE(W, b, x, y, reg):
-    pass
-
+    y_hat = (W * x).sum(axis=1) + b
+    y_hat = 1 / (1 + np.e ** -y_hat)
+    W_grad = -((y_hat - y) * (y_hat * (1-y_hat)) * x + reg)
+    b_grad = -((y_hat - y) * (y_hat * (1-y_hat)))
+    return W_grad, b_grad
 
 def grad_descent(W, b, trainingData, trainingLabels, alpha, iterations, reg, EPS):
     pass
