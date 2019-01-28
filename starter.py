@@ -47,9 +47,10 @@ def crossEntropyLoss(w, b, x, y, reg):
 
 def gradCE(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
-    y_hat = 1 / (1 + np.e ** -y_hat)
-    w_grad = (y_hat - y) * y_hat * (1 - y_hat) * x + reg
-    b_grad = (y_hat - y) * y_hat * (1 - y_hat)
+    y_hat = (1 / (1 + np.e ** -y_hat))
+    y, y_hat = y.reshape((-1, 1)), y_hat.reshape((-1, 1))
+    w_grad = ((y_hat - y) * y_hat * (1 - y_hat) * x + reg).mean(axis=0)
+    b_grad = ((y_hat - y) * y_hat * (1 - y_hat)).mean(axis=0)
     return w_grad, b_grad
 
 
@@ -83,10 +84,10 @@ def buildGraph(beta1=0.9, beta2=0.999, epsilon=1e-8, loss_type='MSE', learning_r
     y_hat = tf.reduce_sum(w * x, axis=1) + b
 
     if loss_type == "MSE":
-        loss_d = 0.5 * tf.reduce_mean(((y_hat - y) ** 2))
+        loss_d = 0.5 * tf.reduce_mean((y_hat - y) ** 2)
     elif loss_type == "CE":
-        y_hat = 1 / (1 + tf.exp(-y_hat))
-        loss_d = -tf.reduce_mean((y * tf.log(y_hat) + (1 - y) * tf.log(1 - y_hat)))
+        y_hat = tf.sigmoid(y_hat)
+        loss_d = -tf.reduce_mean(y * tf.log(y_hat) + (1 - y) * tf.log(1 - y_hat))
     else:
         raise ValueError('Unknown lossType:', loss_type)
     loss_w = 0.5 * reg * tf.reduce_sum(w ** 2)
