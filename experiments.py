@@ -10,7 +10,7 @@ from plotting import *
 class Part1(unittest.TestCase):
 
     def setUp(self):
-        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = loadData()
+        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = load_data()
 
     def test_3(self):
         alphas = [0.005, 0.001, 0.0001]
@@ -24,9 +24,9 @@ class Part1(unittest.TestCase):
             print('Training with alpha=%g' % alpha)
             w, b = initialize()
             for _ in tqdm(range(0, epochs + 1, save_freq)):
-                metric['Training loss'].append(MSE(w, b, self.train_x, self.train_y, 0.0))
-                metric['Validation loss'].append(MSE(w, b, self.val_x, self.val_y, 0.0))
-                metric['Test loss'].append(MSE(w, b, self.test_x, self.test_y, 0.0))
+                metric['Training loss'].append(mse(w, b, self.train_x, self.train_y, 0.0))
+                metric['Validation loss'].append(mse(w, b, self.val_x, self.val_y, 0.0))
+                metric['Test loss'].append(mse(w, b, self.test_x, self.test_y, 0.0))
                 metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
                 metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
                 metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
@@ -53,9 +53,9 @@ class Part1(unittest.TestCase):
             print('Training with reg=%g' % reg)
             w, b = initialize()
             for _ in tqdm(range(0, epochs + 1, save_freq)):
-                metric['Training loss'].append(MSE(w, b, self.train_x, self.train_y, 0.0))
-                metric['Validation loss'].append(MSE(w, b, self.val_x, self.val_y, 0.0))
-                metric['Test loss'].append(MSE(w, b, self.test_x, self.test_y, 0.0))
+                metric['Training loss'].append(mse(w, b, self.train_x, self.train_y, reg))
+                metric['Validation loss'].append(mse(w, b, self.val_x, self.val_y, reg))
+                metric['Test loss'].append(mse(w, b, self.test_x, self.test_y, reg))
                 metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
                 metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
                 metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
@@ -78,9 +78,9 @@ class Part1(unittest.TestCase):
             return w, b
 
         w, b = closed_form_optimal(self.train_x, self.train_y)
-        metrics = {'Training loss': MSE(w, b, self.train_x, self.train_y, 0.0),
-                   'Validation loss': MSE(w, b, self.val_x, self.val_y, 0.0),
-                   'Test loss': MSE(w, b, self.test_x, self.test_y, 0.0),
+        metrics = {'Training loss': mse(w, b, self.train_x, self.train_y, 0.0),
+                   'Validation loss': mse(w, b, self.val_x, self.val_y, 0.0),
+                   'Test loss': mse(w, b, self.test_x, self.test_y, 0.0),
                    'Training accuracy': accuracy(w, b, self.train_x, self.train_y),
                    'Validation accuracy': accuracy(w, b, self.val_x, self.val_y),
                    'Test accuracy': accuracy(w, b, self.test_x, self.test_y)}
@@ -92,7 +92,7 @@ class Part1(unittest.TestCase):
 class Part2(unittest.TestCase):
 
     def setUp(self):
-        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = loadData()
+        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = load_data()
 
     def test_2(self):
         alpha = 0.005
@@ -104,12 +104,12 @@ class Part2(unittest.TestCase):
         print('Training with alpha=%g' % alpha)
         w, b = initialize()
         for _ in tqdm(range(0, epochs + 1, save_freq)):
-            metric['Training loss'].append(crossEntropyLoss(w, b, self.train_x, self.train_y, 0.0))
-            metric['Validation loss'].append(crossEntropyLoss(w, b, self.val_x, self.val_y, 0.0))
-            metric['Test loss'].append(crossEntropyLoss(w, b, self.test_x, self.test_y, 0.0))
-            metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
-            metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
-            metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
+            metric['Training loss'].append(cross_entropy_loss(w, b, self.train_x, self.train_y, 0.1))
+            metric['Validation loss'].append(cross_entropy_loss(w, b, self.val_x, self.val_y, 0.1))
+            metric['Test loss'].append(cross_entropy_loss(w, b, self.test_x, self.test_y, 0.1))
+            metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y, ce=True))
+            metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y, ce=True))
+            metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y, ce=True))
             w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, iterations, 0.1, 1e-7, 'CE')
         for title in metric:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
@@ -130,12 +130,12 @@ class Part2(unittest.TestCase):
         print('Training with alpha=%g' % alpha)
         w, b = initialize()
         for _ in tqdm(range(0, epochs + 1, save_freq)):
-            metric['Training loss'].append(crossEntropyLoss(w, b, self.train_x, self.train_y, 0.0))
-            metric['Validation loss'].append(crossEntropyLoss(w, b, self.val_x, self.val_y, 0.0))
-            metric['Test loss'].append(crossEntropyLoss(w, b, self.test_x, self.test_y, 0.0))
-            metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
-            metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
-            metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
+            metric['Training loss'].append(cross_entropy_loss(w, b, self.train_x, self.train_y, 0.0))
+            metric['Validation loss'].append(cross_entropy_loss(w, b, self.val_x, self.val_y, 0.0))
+            metric['Test loss'].append(cross_entropy_loss(w, b, self.test_x, self.test_y, 0.0))
+            metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y, ce=True))
+            metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y, ce=True))
+            metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y, ce=True))
             w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, iterations, 0.0, 1e-7, 'CE')
         for title in metric:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
@@ -150,7 +150,7 @@ class Part2(unittest.TestCase):
 class Part3(unittest.TestCase):
 
     def setUp(self):
-        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = loadData()
+        self.train_x, self.val_x, self.test_x, self.train_y, self.val_y, self.test_y = load_data()
 
     def test_2(self):
         alpha = 0.001
@@ -159,7 +159,7 @@ class Part3(unittest.TestCase):
         epochs = 700
         batch_size = 500
         print('Training with alpha=%g' % alpha)
-        x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=alpha, loss_type='MSE')
+        x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=alpha, loss_type='MSE')
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
         for _ in tqdm(range(0, epochs + 1)):
@@ -192,7 +192,7 @@ class Part3(unittest.TestCase):
         for batch_size, metric in zip(batch_sizes, metrics):
             print('Training with batch_size=%d' % batch_size)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, loss_type='MSE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, loss_type='MSE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -227,7 +227,7 @@ class Part3(unittest.TestCase):
         for b1, metric in zip(beta1s, metrics):
             print('Training with beta1=%g' % b1)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, beta1=b1, loss_type='MSE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, beta1=b1, loss_type='MSE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -263,7 +263,7 @@ class Part3(unittest.TestCase):
         for b2, metric in zip(beta2s, metrics):
             print('Training with beta2=%g' % b2)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, beta2=b2, loss_type='MSE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, beta2=b2, loss_type='MSE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -299,7 +299,7 @@ class Part3(unittest.TestCase):
         for e, metric in zip(epsilons, metrics):
             print('Training with epsilon=%g' % e)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, epsilon=e, loss_type='MSE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, epsilon=e, loss_type='MSE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -332,7 +332,7 @@ class Part3(unittest.TestCase):
         epochs = 700
         batch_size = 500
         print('Training with alpha=%g' % alpha)
-        x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=alpha, loss_type='CE')
+        x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=alpha, loss_type='CE')
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
         for _ in tqdm(range(0, epochs + 1)):
@@ -366,7 +366,7 @@ class Part3(unittest.TestCase):
         for b1, metric in zip(beta1s, metrics):
             print('Training with beta1=%g' % b1)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, beta1=b1, loss_type='CE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, beta1=b1, loss_type='CE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -402,7 +402,7 @@ class Part3(unittest.TestCase):
         for b2, metric in zip(beta2s, metrics):
             print('Training with beta2=%g' % b2)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, beta2=b2, loss_type='CE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, beta2=b2, loss_type='CE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):
@@ -438,7 +438,7 @@ class Part3(unittest.TestCase):
         for e, metric in zip(epsilons, metrics):
             print('Training with epsilon=%g' % e)
             tf.reset_default_graph()
-            x, y_hat, y, w, b, loss, optimize_op, reg = buildGraph(learning_rate=0.001, epsilon=e, loss_type='CE')
+            x, y_hat, y, w, b, loss, optimize_op, reg = build_graph(learning_rate=0.001, epsilon=e, loss_type='CE')
             sess = tf.Session()
             sess.run(tf.global_variables_initializer())
             for _ in tqdm(range(0, epochs + 1)):

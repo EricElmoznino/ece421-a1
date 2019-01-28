@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-def loadData():
+def load_data():
     with np.load('notMNIST.npz') as data:
         Data, Target = data['images'], data['labels']
         posClass = 2
@@ -16,28 +16,28 @@ def loadData():
         randIndx = np.arange(len(Data))
         np.random.shuffle(randIndx)
         Data, Target = Data[randIndx], Target[randIndx]
-        trainData, trainTarget = Data[:3500].reshape((-1, 28 * 28)), Target[:3500].reshape((-1))
-        validData, validTarget = Data[3500:3600].reshape((-1, 28 * 28)), Target[3500:3600].reshape((-1))
-        testData, testTarget = Data[3600:].reshape((-1, 28 * 28)), Target[3600:].reshape((-1))
+        trainData, trainTarget = Data[:3500].reshape((-1, 28 * 28)), Target[:3500].reshape((-1)).astype(np.float32)
+        validData, validTarget = Data[3500:3600].reshape((-1, 28 * 28)), Target[3500:3600].reshape((-1)).astype(np.float32)
+        testData, testTarget = Data[3600:].reshape((-1, 28 * 28)), Target[3600:].reshape((-1)).astype(np.float32)
     return trainData, validData, testData, trainTarget, validTarget, testTarget
 
 
-def MSE(w, b, x, y, reg):
+def mse(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     loss_d = 0.5 * ((y_hat - y) ** 2).mean()
     loss_w = 0.5 * reg * (w ** 2).sum()
     return loss_d + loss_w
 
 
-def gradMSE(w, b, x, y, reg):
+def grad_mse(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     error = y_hat - y
-    w_grad = (x * error.reshape((-1, 1)) + reg).mean(axis=0)
+    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
     b_grad = error.mean(axis=0)
     return w_grad, b_grad
 
 
-def crossEntropyLoss(w, b, x, y, reg):
+def cross_entropy_loss(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     y_hat = 1 / (1 + np.exp(-y_hat))
     loss_d = -(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat)).mean()
@@ -45,17 +45,19 @@ def crossEntropyLoss(w, b, x, y, reg):
     return loss_d + loss_w
 
 
-def gradCE(w, b, x, y, reg):
+def grad_ce(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     y_hat = (1 / (1 + np.e ** -y_hat))
-    y, y_hat = y.reshape((-1, 1)), y_hat.reshape((-1, 1))
-    w_grad = ((y_hat - y) * y_hat * (1 - y_hat) * x + reg).mean(axis=0)
-    b_grad = ((y_hat - y) * y_hat * (1 - y_hat)).mean(axis=0)
+    error = y_hat - y
+    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
+    b_grad = error.mean(axis=0)
     return w_grad, b_grad
 
 
-def accuracy(w, b, x, y):
+def accuracy(w, b, x, y, ce=False):
     y_hat = (w * x).sum(axis=1) + b
+    if ce:
+        y_hat = 1 / (1 + np.exp(-y_hat))
     y_hat_thresh = (y_hat > 0.5).astype(np.uint8)
     return (y_hat_thresh == y).sum() / y.shape[0]
 
@@ -63,16 +65,17 @@ def accuracy(w, b, x, y):
 def grad_descent(w, b, x, y, alpha, iterations, reg, epsilon, loss_type='MSE'):
     for _ in range(iterations):
         if loss_type == 'MSE':
-            w_grad, b_grad = gradMSE(w, b, x, y, reg)
+            w_grad, b_grad = grad_mse(w, b, x, y, reg)
         elif loss_type == 'CE':
-            w_grad, b_grad = gradCE(w, b, x, y, reg)
+            w_grad, b_grad = grad_ce(w, b, x, y, reg)
         else:
             raise ValueError('Unknown lossType:', loss_type)
-        w, b = w - alpha * normalize(w_grad, epsilon), b - alpha * normalize(b_grad, epsilon)
+        if np.linalg.norm(w_grad) > epsilon:
+            w, b = w - alpha * w_grad, b - alpha * b_grad
     return w, b
 
 
-def buildGraph(beta1=0.9, beta2=0.999, epsilon=1e-8, loss_type='MSE', learning_rate=0.001):
+def build_graph(beta1=0.9, beta2=0.999, epsilon=1e-8, loss_type='MSE', learning_rate=0.001):
     tf.set_random_seed(421)
 
     x = tf.placeholder(tf.float32, shape=[None, 28 * 28])
@@ -97,7 +100,3 @@ def buildGraph(beta1=0.9, beta2=0.999, epsilon=1e-8, loss_type='MSE', learning_r
     optimize_op = optimizer.minimize(loss)
 
     return x, y_hat, y, w, b, loss, optimize_op, reg
-
-
-def normalize(x, epsilon=1e-7):
-    return x / (np.linalg.norm(x) + epsilon)
