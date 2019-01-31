@@ -52,6 +52,9 @@ def grad_ce(w, b, x, y, reg):
     w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
     b_grad = error.mean(axis=0)
     return w_grad, b_grad
+    # w_grad = -(x * y.reshape((-1, 1)) / (1 + np.exp(y * (w * x).sum(axis=1))).reshape((-1, 1))).mean(axis=0) + reg
+    # b_grad = -(y / (1 + np.exp(y * b * 1))).mean(axis=0)
+    return w_grad, b_grad
 
 
 def accuracy(w, b, x, y, ce=False):
