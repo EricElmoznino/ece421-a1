@@ -19,7 +19,6 @@ class Part1(unittest.TestCase):
                    for _ in alphas]
         epochs = 5000
         save_freq = 100
-        iterations = epochs // save_freq
         for alpha, metric in zip(alphas, metrics):
             print('Training with alpha=%g' % alpha)
             w, b = initialize()
@@ -30,7 +29,7 @@ class Part1(unittest.TestCase):
                 metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
                 metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
                 metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
-                w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, iterations, 0.0, 1e-7, 'MSE')
+                w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, save_freq, 0.0, 1e-7, 'MSE')
         for title in metrics[0]:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
                       [m[title] for m in metrics], ['learning rate = %g' % a for a in alphas],
@@ -48,7 +47,6 @@ class Part1(unittest.TestCase):
                    for _ in regs]
         epochs = 5000
         save_freq = 100
-        iterations = epochs // save_freq
         for reg, metric in zip(regs, metrics):
             print('Training with reg=%g' % reg)
             w, b = initialize()
@@ -59,7 +57,7 @@ class Part1(unittest.TestCase):
                 metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y))
                 metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y))
                 metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y))
-                w, b = grad_descent(w, b, self.train_x, self.train_y, 0.005, iterations, reg, 1e-7, 'MSE')
+                w, b = grad_descent(w, b, self.train_x, self.train_y, 0.005, save_freq, reg, 1e-7, 'MSE')
         for title in metrics[0]:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
                       [m[title] for m in metrics], ['regularization = %g' % a for a in regs],
@@ -99,8 +97,7 @@ class Part2(unittest.TestCase):
         metric = {'Training loss': [], 'Validation loss': [], 'Test loss': [],
                   'Training accuracy': [], 'Validation accuracy': [], 'Test accuracy': []}
         epochs = 5000
-        save_freq = 100
-        iterations = epochs // save_freq
+        save_freq = 1
         print('Training with alpha=%g' % alpha)
         w, b = initialize()
         for _ in tqdm(range(0, epochs + 1, save_freq)):
@@ -110,7 +107,7 @@ class Part2(unittest.TestCase):
             metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y, ce=True))
             metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y, ce=True))
             metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y, ce=True))
-            w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, iterations, 0.1, 1e-7, 'CE')
+            w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, save_freq, 0.1, 1e-7, 'CE')
         for title in metric:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
                       [metric[title]], ['learning rate = %g' % alpha],
@@ -126,7 +123,6 @@ class Part2(unittest.TestCase):
                   'Training accuracy': [], 'Validation accuracy': [], 'Test accuracy': []}
         epochs = 5000
         save_freq = 100
-        iterations = epochs // save_freq
         print('Training with alpha=%g' % alpha)
         w, b = initialize()
         for _ in tqdm(range(0, epochs + 1, save_freq)):
@@ -136,7 +132,7 @@ class Part2(unittest.TestCase):
             metric['Training accuracy'].append(accuracy(w, b, self.train_x, self.train_y, ce=True))
             metric['Validation accuracy'].append(accuracy(w, b, self.val_x, self.val_y, ce=True))
             metric['Test accuracy'].append(accuracy(w, b, self.test_x, self.test_y, ce=True))
-            w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, iterations, 0.0, 1e-7, 'CE')
+            w, b = grad_descent(w, b, self.train_x, self.train_y, alpha, save_freq, 0.0, 1e-7, 'CE')
         for title in metric:
             line_plot(title, list(range(0, epochs + 1, save_freq)),
                       [metric[title]], ['learning rate = %g' % alpha],

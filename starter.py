@@ -47,7 +47,7 @@ def cross_entropy_loss(w, b, x, y, reg):
 
 def grad_ce(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
-    y_hat = (1 / (1 + np.e ** -y_hat))
+    y_hat = 1 / (1 + np.exp(-y_hat))
     error = y_hat - y
     w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
     b_grad = error.mean(axis=0)
