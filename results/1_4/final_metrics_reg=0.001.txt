@@ -1,6 +1,6 @@
-Training loss: 0.0149714
-Validation loss: 0.016506
-Test loss: 0.0172051
-Training accuracy: 0.972857
+Training loss: 0.0137216
+Validation loss: 0.0156187
+Test loss: 0.0174457
+Training accuracy: 0.978857
 Validation accuracy: 0.98
-Test accuracy: 0.958621
+Test accuracy: 0.972414

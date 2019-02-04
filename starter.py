@@ -87,13 +87,12 @@ def build_graph(beta1=0.9, beta2=0.999, epsilon=1e-8, loss_type='MSE', learning_
     y_hat = tf.reduce_sum(w * x, axis=1) + b
 
     if loss_type == "MSE":
-        loss_d = 0.5 * tf.reduce_mean((y_hat - y) ** 2)
+        loss_d = tf.losses.mean_squared_error(y, y_hat)
     elif loss_type == "CE":
-        y_hat = tf.sigmoid(y_hat)
-        loss_d = -tf.reduce_mean(y * tf.log(y_hat) + (1 - y) * tf.log(1 - y_hat))
+        loss_d = tf.losses.sigmoid_cross_entropy(y, y_hat)
     else:
         raise ValueError('Unknown lossType:', loss_type)
-    loss_w = 0.5 * reg * tf.reduce_sum(w ** 2)
+    loss_w = tf.contrib.layers.l2_regularizer(reg)(w)
     loss = loss_d + loss_w
 
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
