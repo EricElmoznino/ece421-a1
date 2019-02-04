@@ -97,7 +97,7 @@ class Part2(unittest.TestCase):
         metric = {'Training loss': [], 'Validation loss': [], 'Test loss': [],
                   'Training accuracy': [], 'Validation accuracy': [], 'Test accuracy': []}
         epochs = 5000
-        save_freq = 1
+        save_freq = 100
         print('Training with alpha=%g' % alpha)
         w, b = initialize()
         for _ in tqdm(range(0, epochs + 1, save_freq)):

@@ -32,7 +32,7 @@ def mse(w, b, x, y, reg):
 def grad_mse(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     error = y_hat - y
-    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
+    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg * w
     b_grad = error.mean(axis=0)
     return w_grad, b_grad
 
@@ -49,7 +49,7 @@ def grad_ce(w, b, x, y, reg):
     y_hat = (w * x).sum(axis=1) + b
     y_hat = 1 / (1 + np.exp(-y_hat))
     error = y_hat - y
-    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg
+    w_grad = (x * error.reshape((-1, 1))).mean(axis=0) + reg * w
     b_grad = error.mean(axis=0)
     return w_grad, b_grad
 
