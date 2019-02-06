@@ -286,7 +286,7 @@ class Part3(unittest.TestCase):
                     f.write('%s: %g\n' % (title, m[title][-1]))
 
     def test_4_3(self):
-        epsilons = [0.99, 0.9999]
+        epsilons = [1e-9, 1e-4]
         metrics = [{'Training loss': [], 'Validation loss': [], 'Test loss': [],
                     'Training accuracy': [], 'Validation accuracy': [], 'Test accuracy': []}
                    for _ in epsilons]
@@ -425,7 +425,7 @@ class Part3(unittest.TestCase):
                     f.write('%s: %g\n' % (title, m[title][-1]))
 
     def test_5_4(self):
-        epsilons = [0.99, 0.9999]
+        epsilons = [1e-9, 1e-4]
         metrics = [{'Training loss': [], 'Validation loss': [], 'Test loss': [],
                     'Training accuracy': [], 'Validation accuracy': [], 'Test accuracy': []}
                    for _ in epsilons]
